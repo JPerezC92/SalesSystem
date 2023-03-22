@@ -45,10 +45,67 @@ namespace SalesSystem.Controllers
                 using (SalesSystemContext db = new())
                 {
                     Client oClient = new() { Name = oModel.Name };
-                    var dsada = db.Clients.Add(oClient);
+                    var newClient = db.Clients.Add(oClient).Entity;
                     db.SaveChanges();
 
-                    oResponse.Data = dsada.Entity;
+                    oResponse.Data = newClient;
+                    oResponse.Sucess = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                oResponse.Message = ex.Message;
+            }
+
+            return Ok(oResponse);
+        }
+
+        [HttpPut]
+        public IActionResult Edit(ClientReq oModel)
+        {
+
+            Response oResponse = new Response();
+            try
+            {
+                using (SalesSystemContext db = new())
+                {
+                    Client? oClient = db.Clients.Find(oModel.id);
+                    oClient.Name = oModel.Name;
+                    db.Entry(oClient).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+                    db.SaveChanges();
+
+                    oResponse.Data = oClient;
+                    oResponse.Sucess = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                oResponse.Message = ex.Message;
+            }
+
+            return Ok(oResponse);
+        }
+
+
+
+        [HttpDelete("{Id}")]
+        public IActionResult Delete(int Id)
+        {
+
+            Response oResponse = new Response();
+            try
+            {
+                using (SalesSystemContext db = new())
+                {
+                    Client? oClient = db.Clients.Find(Id);
+                    db.Remove(oClient);
+                    db.SaveChanges();
+                    oResponse.Data = oClient;
                     oResponse.Sucess = true;
                 }
 
