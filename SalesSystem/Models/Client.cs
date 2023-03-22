@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SalesSystem.Models
+namespace SalesSystem.Models;
+
+public partial class Client
 {
-    public partial class Client
-    {
-        public Client()
-        {
-            Sale = new HashSet<Sale>();
-        }
+    public int Id { get; set; }
 
-        public int Id { get; set; }
-        public string Nombre { get; set; }
+    public string? Name { get; set; }
 
-        public virtual ICollection<Sale> Sale { get; set; }
-    }
+    public virtual ICollection<Sale> Sales { get; } = new List<Sale>();
 }
