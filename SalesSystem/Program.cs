@@ -29,6 +29,9 @@ namespace SalesSystem
 
             app.MapControllers();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.Run();
         }
     }
