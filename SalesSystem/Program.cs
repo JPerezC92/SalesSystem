@@ -2,8 +2,11 @@ namespace SalesSystem
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -12,8 +15,18 @@ namespace SalesSystem
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(opt => opt.AddPolicy(
+                name: MyAllowSpecificOrigins,
+                policy =>
+                {
+                    policy
+                    .WithHeaders("*")
+                    .WithOrigins("*");
+                }
+                ));
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -29,8 +42,11 @@ namespace SalesSystem
 
             app.MapControllers();
 
+            // custom config
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.Run();
         }

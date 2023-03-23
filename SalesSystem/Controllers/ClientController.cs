@@ -21,7 +21,7 @@ namespace SalesSystem.Controllers
             {
                 using (SalesSystemContext db = new SalesSystemContext())
                 {
-                    var list = db.Clients.ToList();
+                    var list = db.Clients.OrderByDescending(c=>c.Id).ToList();
                     oResponse.Sucess = true;
                     oResponse.Data = list;
                 }
