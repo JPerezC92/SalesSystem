@@ -1,3 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using SalesSystem.Models.Common;
+using SalesSystem.Services;
+
+using System.Text;
+
 namespace SalesSystem
 {
     public class Program
@@ -13,6 +20,9 @@ namespace SalesSystem
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            #region Customizacion
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors(opt => opt.AddPolicy(
@@ -21,9 +31,40 @@ namespace SalesSystem
                 {
                     policy
                     .WithHeaders("*")
-                    .WithOrigins("*");
+                    .WithOrigins("*")
+                    .WithMethods("*");
                 }
                 ));
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            var appSettingsSection = builder.Configuration.GetSection("AppSettings");
+            builder.Services.Configure<AppSettings>(appSettingsSection);
+
+            // JWT 
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(opt =>
+            {
+                opt.RequireHttpsMetadata = false;
+                opt.SaveToken = true;
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false,
+
+                };
+            });
+
+            #endregion
 
             var app = builder.Build();
 
@@ -36,7 +77,7 @@ namespace SalesSystem
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
@@ -44,8 +85,7 @@ namespace SalesSystem
 
             // custom config
             app.UseCors(MyAllowSpecificOrigins);
-            app.UseAuthentication();
-            app.UseAuthorization();
+           
 
 
             app.Run();

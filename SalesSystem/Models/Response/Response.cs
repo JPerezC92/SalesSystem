@@ -6,8 +6,9 @@
         public string Message { get; set; }
         public object Data { get; set; }
 
-        public Response() {
-        this.Sucess = false;
+        public Response()
+        {
+            this.Sucess = false;
         }
     }
 }

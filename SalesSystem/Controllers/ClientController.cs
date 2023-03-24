@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesSystem.Models;
 using SalesSystem.Models.Request;
 using SalesSystem.Models.Response;
-using System.Collections.Generic;
 
 namespace SalesSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClientController : ControllerBase
     {
         [HttpGet]
@@ -21,7 +21,7 @@ namespace SalesSystem.Controllers
             {
                 using (SalesSystemContext db = new SalesSystemContext())
                 {
-                    var list = db.Clients.OrderByDescending(c=>c.Id).ToList();
+                    var list = db.Clients.OrderByDescending(c => c.Id).ToList();
                     oResponse.Sucess = true;
                     oResponse.Data = list;
                 }
